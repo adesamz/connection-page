@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Create a database connection
-$con = new mysqli('localhost', 'root', '', 'campus');
+$con = new mysqli('localhost', 'root', '', 'name of dbms');
 
 // Check if the connection was successful
 if ($con->connect_error) {
