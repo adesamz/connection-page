@@ -1,0 +1,40 @@
+<?php
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Connect to the database
+    $con = new mysqli('localhost', 'root', '', 'dbms');
+
+    // Check if the connection was successful
+    if ($con->connect_error) {
+        die("Connection failed: " . $con->connect_error);
+    }
+
+    // Get user input
+    $userInput = $_POST['email_or_phone'];
+    $password = $_POST['password'];
+
+    // Prepare the query to select user data
+    $query = $con->prepare("SELECT * FROM `forms` WHERE (email = ? OR phone = ?) AND password = ?");
+    $query->bind_param("sss", $userInput, $userInput, $password);
+    $query->execute();
+    $result = $query->get_result();
+
+    // Check if any result is returned
+    if ($result->num_rows > 0) {
+        // Fetch the user data
+        $user = $result->fetch_assoc();
+        $_SESSION['username'] = $user['username'];  // Store username in session
+
+        // Redirect to homepage.php after successful login
+        header("Location: homepage.php");
+        exit();
+    } else {
+        // Debugging: Check why login failed
+        echo "<script>alert('Invalid email/phone number or password. Please try again.');</script>";
+    }
+
+    $query->close();
+    $con->close();
+}
+?>
